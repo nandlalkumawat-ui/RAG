@@ -1,0 +1,35 @@
+# ------------------------------------------------------------------
+# All settings for the RAG app live here. Change a value, restart the
+# server, and the app uses the new value. No code changes needed.
+# (Folder/file paths are relative to this project folder.)
+# ------------------------------------------------------------------
+
+# Where your books (PDF / TXT files) are kept
+books_folder: books
+
+# Where we save the vector database (embeddings) and the Q&A history
+chroma_folder: data/chroma_db
+history_db_file: data/history.db
+
+# ---- Chunking ----
+# chunk_size is counted in TOKENS of the embedding model (not words).
+# all-MiniLM-L6-v2 can only read 256 tokens at once. Anything longer is
+# cut off and never embedded, so we keep chunks at 250 tokens (< 512).
+chunk_size: 250
+# Neighbouring chunks share 50 tokens, so a sentence cut at a chunk
+# border still appears whole in at least one chunk.
+chunk_overlap: 50
+
+# ---- Retrieval ----
+# How many chunks to fetch from the vector DB for every question
+top_k: 3
+
+# ---- Embedding model (runs locally, free) ----
+embedding_model: sentence-transformers/all-MiniLM-L6-v2
+
+# ---- LLM (runs locally with Ollama, free) ----
+ollama_url: http://localhost:11434
+llm_model: llama3.2
+temperature: 0.1        # low = more factual, less creative
+max_answer_tokens: 400  # the longest answer the LLM is allowed to write
+llm_timeout_seconds: 180
