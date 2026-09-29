@@ -24,4 +24,19 @@ def load_config(config_file: Path = PROJECT_DIR / "config.yaml") -> dict:  # Loa
     if config["chunk_overlap"] >= config["chunk_size"]:
         raise ValueError("chunk_overlap must be smaller than chunk_size")
 
+    # Older config files have no reranker section: behave like before (no reranking)
+    reranker = config.get("reranker") or {}
+    config["reranker"] = reranker
+    reranker["enabled"] = bool(reranker.get("enabled", False))
+
+    positive_ints = ["top_k"]
+    if reranker["enabled"]:
+        positive_ints += ["retrieval_top_k", "rerank_top_n"]
+        if not reranker.get("model"):
+            raise ValueError("reranker.model must be set when reranker.enabled is true")
+    for key in positive_ints:
+        value = config.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            raise ValueError(f"{key} must be a whole number of at least 1, got {value!r}")
+
     return config

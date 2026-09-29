@@ -57,13 +57,16 @@ def main():
         lines.append("**Sources:**\n")
         for s in result["sources"]:
             preview = " ".join(s["text"].split())[:200]
+            rerank = f", rerank {s['rerank_score']}" if "rerank_score" in s else ""
             lines.append(f"- [{s['source_number']}] {s['citation']} "
-                         f"(similarity {s['similarity']}): {preview}...")
+                         f"(similarity {s['similarity']}{rerank}): {preview}...")
         lines.append("")
         print(f"done: {question}")
 
     average = sum(precisions) / len(precisions)
-    lines.insert(1, f"Average retrieval precision@{rag.config['top_k']}: **{average:.2f}**\n")
+    reranking = "on" if rag.reranker else "off"
+    lines.insert(1, f"Average retrieval precision@{rag.default_top_k()} (reranking {reranking}): "
+                    f"**{average:.2f}**\n")
 
     with open("evaluation_results.md", "w") as f:
         f.write("\n".join(lines))

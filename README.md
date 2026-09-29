@@ -91,7 +91,11 @@ or use `POST /books/upload`. Only new books are processed.
 |---|---|---|
 | `chunk_size` | 250 | Max tokens per chunk |
 | `chunk_overlap` | 50 | Tokens shared by neighbouring chunks |
-| `top_k` | 3 | Chunks retrieved per question (can also be set per request) |
+| `top_k` | 3 | Chunks retrieved per question when the reranker is off (can also be set per request) |
+| `retrieval_top_k` | 20 | Reranker on: candidate chunks fetched from ChromaDB |
+| `rerank_top_n` | 5 | Reranker on: best chunks kept after reranking and given to the LLM (per-request `top_k` overrides it) |
+| `reranker.enabled` | true | `false` = plain vector search, exactly as before |
+| `reranker.model` | BAAI/bge-reranker-base | Cross-encoder that scores (question, chunk) pairs |
 | `embedding_model` | all-MiniLM-L6-v2 | Model that turns text into vectors |
 | `llm_model` | llama3.2 | Any model you have in Ollama (`ollama list`) |
 | `temperature` | 0.1 | Lower = more factual |
@@ -109,6 +113,7 @@ rag_app/
   step2_chunker.py       text -> overlapping chunks
   step3_embedder.py      chunk -> vector of 384 numbers
   step4_vector_store.py  store + search vectors in ChromaDB
+  step4b_reranker.py     cross-encoder picks the best of the retrieved chunks
   step5_llm.py           prompt + call Ollama
   history_db.py          SQLite table for questions/answers
   rag_pipeline.py        connects steps 1-5 (ingest / search / ask)
@@ -118,7 +123,7 @@ evaluate.py              runs 8 test questions and measures quality
 ```
 
 Logs in the terminal show each step: books loaded, chunks created, and the retrieval
-similarity scores for every question.
+similarity scores (plus rerank scores, when the reranker is on) for every question.
 
 ## 5. Tests and evaluation
 

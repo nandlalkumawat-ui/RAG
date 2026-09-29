@@ -39,6 +39,9 @@ def config(tmp_path_factory):
     cfg.update(books_folder=str(books),
                chroma_folder=str(tmp / "chroma_db"),
                history_db_file=str(tmp / "history.db"))
+    # Test the plain vector search path (no 1 GB reranker download).
+    # Reranking is covered with a fake model in test_reranker.py.
+    cfg["reranker"] = {**cfg["reranker"], "enabled": False}
     return cfg
 
 

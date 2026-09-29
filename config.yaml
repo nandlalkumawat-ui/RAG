@@ -22,7 +22,19 @@ chunk_overlap: 50
 
 # ---- Retrieval ----
 # How many chunks to fetch from the vector DB for every question
+# (used when the reranker below is disabled)
 top_k: 3
+
+# ---- Reranking (used when reranker.enabled is true) ----
+# The vector DB first fetches retrieval_top_k candidate chunks, then the
+# cross-encoder reranker scores all of them and only the best rerank_top_n
+# are given to the LLM. retrieval_top_k should be larger than rerank_top_n.
+retrieval_top_k: 20
+rerank_top_n: 5
+reranker:
+  enabled: true
+  # Cross-encoder model, runs locally (~1.1 GB download on first use)
+  model: BAAI/bge-reranker-base
 
 # ---- Embedding model (runs locally, free) ----
 embedding_model: sentence-transformers/all-MiniLM-L6-v2

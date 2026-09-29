@@ -26,7 +26,7 @@ class Embedder:
         vectors = self.model.encode(
             texts,
             batch_size=32,
-            normalize_embeddings=True,  # length 1 vectors, so cosine similarity works well
+            normalize_embeddings=True,  # length 1 vectors, so cosine similarity works well 
             show_progress_bar=show_progress,
         )
         return vectors.tolist()

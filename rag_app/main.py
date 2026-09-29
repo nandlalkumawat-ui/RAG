@@ -25,7 +25,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 # ---------------- Request / response shapes (these show up in Swagger) ----------------
 class QuestionRequest(BaseModel):
     question: str = Field(..., examples=["What is a rational agent?"])
-    top_k: int | None = Field(None, ge=1, le=20, description="How many chunks to use. Empty = value from config.yaml")
+    top_k: int | None = Field(None, ge=1, le=20, description="How many chunks to use. Empty = value from "
+                              "config.yaml (rerank_top_n when the reranker is enabled, else top_k)")
 
 
 class Source(BaseModel):
@@ -34,7 +35,8 @@ class Source(BaseModel):
     file: str
     page: int
     chunk: int
-    similarity: float
+    similarity: float  # from the vector DB (step 4)
+    rerank_score: float | None = None  # from the reranker (step 4b), None when it is off
     text: str
 
 
